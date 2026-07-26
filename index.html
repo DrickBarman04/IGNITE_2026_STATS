@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demolition Esports — Trident Tournament</title>
+<link rel="icon" href="logo.jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#08080c;
+    --panel:#121218;
+    --panel2:#191922;
+    --border:rgba(255,255,255,.08);
+    --red:#ef4b5f;
+    --red2:#ff8a5c;
+    --purple:#8b5cf6;
+    --purple2:#5b2fd6;
+    --gold:#f2c14e;
+    --teal:#4ecdc4;
+    --text:#f1f0f6;
+    --dim:#9694a6;
+    --grad: linear-gradient(135deg, var(--red) 0%, var(--purple2) 100%);
+    --grad-soft: linear-gradient(135deg, rgba(239,75,95,.16) 0%, rgba(139,92,246,.16) 100%);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{ font-family:'Rajdhani',sans-serif; font-weight:700; letter-spacing:.02em; }
+  ::selection{ background:var(--purple); color:#fff; }
+
+  a{ color:inherit; }
+
+  /* header */
+  header.top{
+    position:sticky; top:0; z-index:50;
+    background:rgba(8,8,12,.86); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .top-inner{
+    max-width:1240px; margin:0 auto; padding:14px 24px;
+    display:flex; align-items:center; gap:16px;
+  }
+  .top-inner img.logo{ width:44px; height:44px; border-radius:10px; object-fit:cover; box-shadow:0 0 0 1px var(--border);}
+  .brand-text{ line-height:1.1; }
+  .brand-text .name{ font-size:20px; font-weight:700; letter-spacing:.06em; }
+  .brand-text .sub{ font-size:12px; color:var(--dim); letter-spacing:.14em; text-transform:uppercase; }
+  .brand-text .sub b{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .status-wrap{ margin-left:auto; display:flex; align-items:center; gap:14px; }
+  .status{ display:flex; align-items:center; gap:7px; font-size:12px; color:var(--dim); }
+  .dot{ width:8px; height:8px; border-radius:50%; background:#3ddc84; box-shadow:0 0 8px #3ddc84; }
+  .dot.err{ background:var(--red); box-shadow:0 0 8px var(--red); }
+  .dot.sync{ background:var(--gold); box-shadow:0 0 8px var(--gold); animation:pulse 1s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+  button.refresh{
+    background:var(--panel2); border:1px solid var(--border); color:var(--text);
+    padding:7px 14px; border-radius:8px; font-size:12px; cursor:pointer; font-family:inherit;
+    display:flex; align-items:center; gap:6px; transition:.15s;
+  }
+  button.refresh:hover{ border-color:var(--purple); }
+  button.refresh svg{ width:13px; height:13px; }
+
+  /* nav */
+  nav.tabs{
+    max-width:1240px; margin:0 auto; padding:0 24px;
+    display:flex; gap:4px; overflow-x:auto; scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+  nav.tabs button{
+    background:none; border:none; color:var(--dim); font-family:'Rajdhani',sans-serif;
+    font-weight:600; font-size:14.5px; letter-spacing:.03em; padding:12px 16px 10px;
+    cursor:pointer; white-space:nowrap; position:relative; transition:.15s;
+  }
+  nav.tabs button:hover{ color:var(--text); }
+  nav.tabs button.active{ color:#fff; }
+  nav.tabs button.active::after{
+    content:''; position:absolute; left:14px; right:14px; bottom:0; height:3px;
+    border-radius:3px 3px 0 0; background:var(--grad);
+  }
+
+  main{ max-width:1240px; margin:0 auto; padding:28px 24px 80px; }
+  section.view{ display:none; animation:fade .25s ease; }
+  section.view.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+  .view-head{ margin-bottom:22px; }
+  .view-head h2{ font-size:26px; margin:0 0 4px; }
+  .view-head p{ margin:0; color:var(--dim); font-size:13.5px; }
+
+  .grid{ display:grid; gap:16px; }
+  .grid-2{ grid-template-columns:1fr 1fr; }
+  .grid-4{ grid-template-columns:repeat(4,1fr); }
+  @media(max-width:900px){ .grid-2, .grid-4{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px;
+  }
+  .card h3{ margin:0 0 14px; font-size:15px; color:var(--text); letter-spacing:.02em; }
+  .card h3 span{ color:var(--dim); font-weight:500; font-family:'Inter',sans-serif; font-size:12px; }
+
+  /* intro player cards */
+  .intro-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:16px; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .intro-card .photo-wrap{ position:relative; height:190px; overflow:hidden; }
+  .intro-card img{ width:100%; height:100%; object-fit:cover; object-position:top center; display:block; filter:saturate(1.05); }
+  .intro-card .photo-wrap::after{
+    content:''; position:absolute; inset:0; background:linear-gradient(to top, var(--panel) 0%, transparent 60%);
+  }
+  .intro-card .role-tag{
+    position:absolute; top:12px; right:12px; background:var(--grad); color:#fff; font-family:'Rajdhani',sans-serif;
+    font-weight:700; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; padding:4px 10px; border-radius:20px;
+  }
+  .intro-card .body{ padding:16px 18px 20px; }
+  .intro-card .pname{ font-size:19px; margin:0 0 8px; }
+  .intro-card .bio{ font-size:13px; line-height:1.55; color:var(--dim); }
+
+  /* stat cards */
+  .stat{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+  }
+  .stat .label{ font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); margin-bottom:6px; }
+  .stat .value{ font-family:'Rajdhani',sans-serif; font-weight:700; font-size:26px; }
+  .stat .value.accent{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  /* overall-performance player highlight cards */
+  .pstat-card{
+    background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 18px;
+    border-top:3px solid var(--accent, var(--purple));
+  }
+  .pstat-card .pstat-head{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .pstat-card .pstat-head img{ width:38px; height:38px; border-radius:9px; object-fit:cover; object-position:top center; }
+  .pstat-card .pstat-head h3{ margin:0; font-size:16px; }
+  .pstat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .pstat-grid .stat{ padding:10px 12px; }
+  .pstat-grid .stat .value{ font-size:20px; }
+
+  /* player select */
+  .player-switch{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+  .player-switch button{
+    background:var(--panel2); border:1px solid var(--border); color:var(--dim); padding:8px 16px; border-radius:9px;
+    font-family:'Rajdhani',sans-serif; font-weight:600; letter-spacing:.03em; cursor:pointer; font-size:14px; transition:.15s;
+  }
+  .player-switch button.active{ color:#fff; border-color:transparent; background:var(--grad); }
+
+  .player-hero{ display:flex; gap:22px; margin-bottom:22px; align-items:flex-start; }
+  .player-hero .photo{ width:150px; height:150px; border-radius:16px; overflow:hidden; flex:none; border:1px solid var(--border); }
+  .player-hero .photo img{ width:100%; height:100%; object-fit:cover; object-position:top center; }
+  .player-hero .info{ flex:1; min-width:0; }
+  .player-hero .info .role{
+    display:inline-block; background:var(--grad); color:#fff; font-family:'Rajdhani',sans-serif; font-weight:700;
+    font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; padding:3px 11px; border-radius:20px; margin-bottom:8px;
+  }
+  .player-hero .info h2{ margin:0 0 8px; font-size:26px; }
+  .player-hero .info p{ margin:0; color:var(--dim); font-size:13.5px; line-height:1.6; max-width:70ch; }
+
+  /* tables */
+  .table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:14px; }
+  table{ width:100%; border-collapse:collapse; font-size:13px; min-width:560px; }
+  thead th{
+    background:var(--panel2); text-align:left; padding:11px 14px; font-family:'Rajdhani',sans-serif;
+    font-weight:600; letter-spacing:.03em; color:var(--dim); text-transform:uppercase; font-size:11.5px;
+    border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  tbody td{ padding:10px 14px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  tbody tr:last-child td{ border-bottom:none; }
+  tbody tr.total-row{ background:var(--grad-soft); font-weight:700; }
+  tbody tr:hover{ background:rgba(255,255,255,.03); }
+
+
+  /* match ladder — signature element */
+  .ladder{ display:flex; align-items:center; gap:0; overflow-x:auto; padding:18px 4px 22px; margin-bottom:8px; }
+  .ladder-node{ display:flex; flex-direction:column; align-items:center; flex:none; width:64px; position:relative; }
+  .ladder-node .pip{
+    width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px; border:2px solid var(--border); color:var(--dim);
+    background:var(--panel2); z-index:1;
+  }
+  .ladder-node.played .pip{ background:var(--grad); border-color:transparent; color:#fff; box-shadow:0 0 12px rgba(239,75,95,.45); }
+  .ladder-node .line{ position:absolute; top:17px; left:50%; width:100%; height:2px; background:var(--border); z-index:0; }
+  .ladder-node.played .line{ background:linear-gradient(90deg, var(--purple2), var(--red)); }
+  .ladder-node:last-child .line{ display:none; }
+  .ladder-node .pts{ margin-top:6px; font-size:10.5px; color:var(--dim); }
+
+  .empty-note{ font-size:12.5px; color:var(--dim); padding:10px 2px 0; }
+  .banner-err{
+    background:rgba(239,75,95,.12); border:1px solid rgba(239,75,95,.35); color:#ffb3bb;
+    padding:14px 16px; border-radius:12px; font-size:13px; line-height:1.6; margin-bottom:20px;
+  }
+  .banner-err code{ background:rgba(255,255,255,.08); padding:1px 6px; border-radius:5px; }
+
+  footer{
+    text-align:center; padding:26px 24px 40px; color:var(--dim); font-size:11.5px; letter-spacing:.03em;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <img class="logo" src="logo.jpeg" alt="Demolition Esports">
+    <div class="brand-text">
+      <div class="name">DEMOLITION ESPORTS</div>
+      <div class="sub">Tournament: <b>Trident</b> · BGMI</div>
+    </div>
+    <div class="status-wrap">
+      <div class="status"><span class="dot" id="statusDot"></span><span id="statusText">Live</span> · <span id="lastSync">—</span></div>
+      <button class="refresh" id="refreshBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.6-6.36M21 3v6h-6"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-view="introduction" class="active">Introduction</button>
+    <button data-view="main">Main Tournament Sheet</button>
+    <button data-view="overall">Overall Performance</button>
+    <button data-view="phoenix">Phoenix</button>
+    <button data-view="motub">MotuB</button>
+    <button data-view="monarch">Monarch</button>
+    <button data-view="joker">Joker</button>
+    <button data-view="position">Position Points</button>
+  </nav>
+</header>
+
+<main>
+  <div id="errBanner"></div>
+
+  <section class="view active" id="view-introduction">
+    <div class="view-head">
+      <h2>The Roster</h2>
+      <p>Demolition Esports' four-man lineup heading into Trident.</p>
+    </div>
+    <div class="grid grid-4" id="introGrid"></div>
+  </section>
+
+  <section class="view" id="view-main">
+    <div class="view-head">
+      <h2>Main Tournament Sheet</h2>
+      <p>Match-by-match kills, position and total points — pulled live from the sheet.</p>
+    </div>
+    <div id="mainLadder"></div>
+    <div class="grid grid-4" id="mainStats" style="margin-bottom:16px;"></div>
+    <div class="table-wrap"><table id="tableMain"></table></div>
+  </section>
+
+  <section class="view" id="view-overall">
+    <div class="view-head">
+      <h2>Overall Performance</h2>
+      <p>Aggregate stats across every match played, compared side by side.</p>
+    </div>
+    <div class="grid grid-4" id="overallCards" style="margin-bottom:16px;"></div>
+    <div class="table-wrap"><table id="tableOverall"></table></div>
+  </section>
+
+  <section class="view" id="view-phoenix"></section>
+  <section class="view" id="view-motub"></section>
+  <section class="view" id="view-monarch"></section>
+  <section class="view" id="view-joker"></section>
+
+  <section class="view" id="view-position">
+    <div class="view-head">
+      <h2>Position Points</h2>
+      <p>Placement earned and points awarded, match by match.</p>
+    </div>
+    <div id="posLadder"></div>
+    <div class="grid grid-4" id="posStats" style="margin-bottom:16px;"></div>
+    <div class="table-wrap"><table id="tablePosition"></table></div>
+  </section>
+</main>
+
+<footer>DEMOLITION ESPORTS · TRIDENT TOURNAMENT — synced live from Google Sheets</footer>
+
+<script>
+/* ===================== CONFIG ===================== */
+const SHEET_ID = '128Oit14zjlQfsY78kEa4ImVosfYk7gTVLrpPgVNQ2SA';
+const GIDS = {
+  introduction: '1740016734',
+  main:         '404175544',
+  overall:      '0',
+  phoenix:      '320943220',
+  motub:        '1063230602',
+  monarch:      '932242368',
+  joker:        '669407836',
+  position:     '1933490064'
+};
+const REFRESH_MS = 60000;
+
+const PLAYER_META = {
+  phoenix: { color:'#ef4b5f', image:'Pheonix.jpeg', label:'Phoenix' },
+  motub:   { color:'#ff8a5c', image:'MotuB.jpeg',   label:'MotuB' },
+  monarch: { color:'#8b5cf6', image:'Monarch.jpeg', label:'Monarch' },
+  joker:   { color:'#4ecdc4', image:'Joker.jpeg',   label:'Joker' }
+};
+
+let DATA = null;
+let currentView = 'introduction';
+
+/* ===================== HELPERS ===================== */
+function num(v){
+  if(v === null || v === undefined) return 0;
+  const n = parseFloat(String(v).replace(/[^0-9.\-]/g,''));
+  return isNaN(n) ? 0 : n;
+}
+function isBlankOrDiv(v){
+  const s = (v||'').toString().trim();
+  return s === '' || /DIV|N\/?A|#/i.test(s);
+}
+function extractKey(rawName){
+  let s = (rawName||'').replace(/Đ/g,'D').replace(/đ/g,'d');
+  s = s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  s = s.replace(/[^a-zA-Z]/g,'').toLowerCase();
+  if(s.includes('phoenix')) return 'phoenix';
+  if(s.includes('motub')) return 'motub';
+  if(s.includes('monarch')) return 'monarch';
+  if(s.includes('joker')) return 'joker';
+  return null;
+}
+function isMatchRow(row){
+  return row && row[0] !== undefined && /^\d+$/.test(String(row[0]).trim());
+}
+function findTotalRow(rows){
+  return rows.find(r => r[0] && String(r[0]).trim().toLowerCase() === 'total');
+}
+/* ===================== FETCH ===================== */
+/* Google's gviz CSV/JSON endpoints don't send CORS headers, so a plain
+   fetch() from a page on a different domain (like GitHub Pages) gets
+   silently blocked by the browser. We sidestep that entirely by loading
+   the data as JSONP — a <script> tag, which browsers never CORS-block —
+   the same trick charting libraries have used against this endpoint for
+   over a decade. */
+let _jsonpN = 0;
+function fetchGviz(gid){
+  return new Promise((resolve, reject) => {
+    const cb = '__gvizCb' + (_jsonpN++);
+    let done = false;
+    const cleanup = () => { const s = document.getElementById(cb+'_s'); if(s) s.remove(); delete window[cb]; };
+    window[cb] = (json) => {
+      done = true; cleanup();
+      if(!json || json.status === 'error') { reject(new Error('gviz error')); return; }
+      resolve(tableToRows(json.table));
+    };
+    const script = document.createElement('script');
+    script.id = cb + '_s';
+    script.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${gid}&tqx=out:json;responseHandler:${cb}`;
+    script.onerror = () => { if(!done){ cleanup(); reject(new Error('script load failed')); } };
+    document.head.appendChild(script);
+    setTimeout(() => { if(!done){ cleanup(); reject(new Error('timeout')); } }, 12000);
+  });
+}
+function tableToRows(table){
+  const header = (table.cols||[]).map(c => c.label || c.id || '');
+  const body = (table.rows||[]).map(r => (r.c||[]).map(cell => {
+    if(!cell) return '';
+    if(cell.v === null || cell.v === undefined) return cell.f !== undefined ? cell.f : '';
+    return cell.v;
+  }));
+  return [header, ...body];
+}
+
+async function loadAll(){
+  setStatus('sync');
+  try{
+    const [introduction, main, overall, phoenix, motub, monarch, joker, position] = await Promise.all([
+      fetchGviz(GIDS.introduction), fetchGviz(GIDS.main), fetchGviz(GIDS.overall),
+      fetchGviz(GIDS.phoenix), fetchGviz(GIDS.motub), fetchGviz(GIDS.monarch),
+      fetchGviz(GIDS.joker), fetchGviz(GIDS.position)
+    ]);
+    DATA = { introduction, main, overall, phoenix, motub, monarch, joker, position };
+    document.getElementById('errBanner').innerHTML = '';
+    renderView(currentView);
+    setStatus('live');
+    document.getElementById('lastSync').textContent = 'synced ' + new Date().toLocaleTimeString();
+  }catch(err){
+    console.error(err);
+    setStatus('err');
+    document.getElementById('errBanner').innerHTML =
+      `<div class="banner-err">Couldn't reach the Google Sheet live feed. Open the sheet → <b>Share</b> → General access → set to <code>Anyone with the link → Viewer</code>, then hit Refresh. (If it's already set to that, try again in a few seconds — Google's endpoint occasionally hiccups on first load.)</div>`;
+  }
+}
+function setStatus(state){
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'dot' + (state==='sync' ? ' sync' : state==='err' ? ' err' : '');
+  txt.textContent = state==='sync' ? 'Syncing' : state==='err' ? 'Offline' : 'Live';
+}
+
+/* ===================== RENDER: ROUTER ===================== */
+function renderView(name){
+  currentView = name;
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  document.querySelectorAll('section.view').forEach(s => s.classList.toggle('active', s.id === 'view-' + name));
+  if(!DATA) return;
+  if(name === 'introduction') renderIntroduction();
+  else if(name === 'main') renderMain();
+  else if(name === 'overall') renderOverall();
+  else if(['phoenix','motub','monarch','joker'].includes(name)) renderPlayer(name);
+  else if(name === 'position') renderPosition();
+}
+
+/* ===================== RENDER: INTRODUCTION ===================== */
+function renderIntroduction(){
+  const rows = DATA.introduction.slice(1).filter(r => r[0] && extractKey(r[0]));
+  const grid = document.getElementById('introGrid');
+  grid.innerHTML = rows.map(r => {
+    const [name, , role, info] = r;
+    const key = extractKey(name);
+    const meta = PLAYER_META[key] || { image:'logo.jpeg' };
+    return `<div class="intro-card">
+      <div class="photo-wrap">
+        <img src="${meta.image}" alt="${name}" onerror="this.onerror=null;this.src='logo.jpeg';this.style.objectFit='contain';this.style.padding='36px';this.style.opacity='.45';">
+        <span class="role-tag">${role||''}</span>
+      </div>
+      <div class="body">
+        <h3 class="pname">${name}</h3>
+        <p class="bio">${info||''}</p>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== RENDER: MAIN TOURNAMENT SHEET ===================== */
+function renderMain(){
+  const rows = DATA.main;
+  const header = rows[0] || [];
+  const dataRows = rows.slice(1).filter(isMatchRow);
+  const totalRow = findTotalRow(rows) || [];
+
+  // ladder
+  document.getElementById('mainLadder').innerHTML = buildLadder(dataRows, r => num(r[7]) > 0 || num(r[1])+num(r[2])+num(r[3])+num(r[4]) > 0);
+
+  // table
+  document.getElementById('tableMain').innerHTML = `
+    <thead><tr>${header.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>
+      ${dataRows.map(r => `<tr>${r.map(c=>`<td>${c===''?'—':c}</td>`).join('')}</tr>`).join('')}
+      ${totalRow.length ? `<tr class="total-row">${totalRow.map(c=>`<td>${c===''?'—':c}</td>`).join('')}</tr>` : ''}
+    </tbody>`;
+
+  // summary stat cards
+  const matchesPlayed = dataRows.filter(r => num(r[7]) > 0 || num(r[1])+num(r[2])+num(r[3])+num(r[4]) > 0).length;
+  const totalKills = dataRows.reduce((s,r) => s + num(r[1]) + num(r[2]) + num(r[3]) + num(r[4]), 0);
+  const totalPoints = totalRow.length ? num(totalRow[7]) : dataRows.reduce((s,r) => s + num(r[7]), 0);
+  const bestMatch = dataRows.reduce((best,r) => num(r[7]) > num(best[7]||-1) ? r : best, dataRows[0] || []);
+
+  document.getElementById('mainStats').innerHTML = `
+    <div class="stat"><div class="label">Matches Played</div><div class="value">${matchesPlayed}</div></div>
+    <div class="stat"><div class="label">Total Kills</div><div class="value accent">${totalKills}</div></div>
+    <div class="stat"><div class="label">Total Points</div><div class="value accent">${totalPoints}</div></div>
+    <div class="stat"><div class="label">Best Match</div><div class="value">${bestMatch && bestMatch[0]!==undefined ? 'M'+bestMatch[0]+' · '+num(bestMatch[7])+' pts' : '—'}</div></div>
+  `;
+}
+
+/* ===================== RENDER: OVERALL PERFORMANCE ===================== */
+function renderOverall(){
+  const rows = DATA.overall;
+  const header = rows[0] || [];
+  const dataRows = rows.slice(1).filter(r => r[0] && extractKey(r[0]));
+
+  document.getElementById('tableOverall').innerHTML = `
+    <thead><tr>${header.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${dataRows.map(r => `<tr>${r.map((c,i)=> i===7 && isBlankOrDiv(c) ? '<td>—</td>' : `<td>${c===''?'—':c}</td>`).join('')}</tr>`).join('')}</tbody>`;
+
+  document.getElementById('overallCards').innerHTML = dataRows.map(r => {
+    const key = extractKey(r[0]);
+    const meta = PLAYER_META[key] || { color:'#8b5cf6', image:'logo.jpeg', label:r[0] };
+    const [ , matches, finishes, assists, damage, mvps, , fd ] = r;
+    return `
+    <div class="pstat-card" style="--accent:${meta.color}">
+      <div class="pstat-head">
+        <img src="${meta.image}" alt="${meta.label}" onerror="this.onerror=null;this.src='logo.jpeg';">
+        <h3>${meta.label}</h3>
+      </div>
+      <div class="pstat-grid">
+        <div class="stat"><div class="label">Matches</div><div class="value">${matches||0}</div></div>
+        <div class="stat"><div class="label">Damage</div><div class="value accent">${damage||0}</div></div>
+        <div class="stat"><div class="label">Finishes</div><div class="value">${finishes||0}</div></div>
+        <div class="stat"><div class="label">Assists</div><div class="value">${assists||0}</div></div>
+        <div class="stat"><div class="label">MVPs</div><div class="value">${mvps||0}</div></div>
+        <div class="stat"><div class="label">F/D Ratio</div><div class="value">${isBlankOrDiv(fd)?'—':fd}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===================== RENDER: PLAYER TABS ===================== */
+function renderPlayer(key){
+  const meta = PLAYER_META[key];
+  const introRow = DATA.introduction.slice(1).find(r => extractKey(r[0]) === key) || [];
+  const overallRow = DATA.overall.slice(1).find(r => extractKey(r[0]) === key) || [];
+  const sheetRows = (DATA[key] || []).slice(1).filter(isMatchRow);
+
+  const [name, , role, info] = introRow;
+  const [, matches, finishes, assists, damage, mvps, survived, fd] = overallRow;
+
+  const section = document.getElementById('view-' + key);
+  section.innerHTML = `
+    <div class="player-hero">
+      <div class="photo"><img src="${meta.image}" alt="${meta.label}" onerror="this.onerror=null;this.src='logo.jpeg';this.style.objectFit='contain';this.style.padding='20px';this.style.opacity='.45';"></div>
+      <div class="info">
+        <span class="role">${role || ''}</span>
+        <h2>${name || meta.label}</h2>
+        <p>${info || ''}</p>
+      </div>
+    </div>
+    <div class="grid grid-4" style="margin-bottom:20px;">
+      <div class="stat"><div class="label">Total Matches</div><div class="value">${matches||0}</div></div>
+      <div class="stat"><div class="label">Total Damage</div><div class="value accent">${damage||0}</div></div>
+      <div class="stat"><div class="label">Finishes</div><div class="value">${finishes||0}</div></div>
+      <div class="stat"><div class="label">F/D Ratio</div><div class="value">${isBlankOrDiv(fd)?'—':fd}</div></div>
+    </div>
+    <div class="grid grid-4" style="margin-bottom:20px;">
+      <div class="stat"><div class="label">Assists</div><div class="value">${assists||0}</div></div>
+      <div class="stat"><div class="label">MVPs</div><div class="value">${mvps||0}</div></div>
+      <div class="stat"><div class="label">Total Survived</div><div class="value">${survived||0}</div></div>
+      <div class="stat"><div class="label">Role</div><div class="value" style="font-size:18px;">${role||'—'}</div></div>
+    </div>
+    <div class="table-wrap"><table id="tablePlayer-${key}"></table></div>
+  `;
+
+  const header = ['Match #','Finishes','Assists','Damage','MVPs','Survived Time'];
+  document.getElementById('tablePlayer-' + key).innerHTML = `
+    <thead><tr>${header.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${sheetRows.map(r => `<tr><td>${r[1]}</td><td>${r[2]||'—'}</td><td>${r[3]||'—'}</td><td>${r[4]||'—'}</td><td>${r[5]||'—'}</td><td>${r[6]||'—'}</td></tr>`).join('')}</tbody>`;
+}
+
+/* ===================== RENDER: POSITION POINTS ===================== */
+function renderPosition(){
+  const rows = DATA.position;
+  const header = rows[0] || [];
+  const dataRows = rows.slice(1).filter(isMatchRow);
+  const totalRow = findTotalRow(rows) || [];
+
+  document.getElementById('posLadder').innerHTML = buildLadder(dataRows, r => num(r[2]) > 0 || (r[1]||'') !== '');
+
+  document.getElementById('tablePosition').innerHTML = `
+    <thead><tr>${header.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>
+      ${dataRows.map(r => `<tr>${r.map(c=>`<td>${c===''?'—':c}</td>`).join('')}</tr>`).join('')}
+      ${totalRow.length ? `<tr class="total-row">${totalRow.map(c=>`<td>${c===''?'—':c}</td>`).join('')}</tr>` : ''}
+    </tbody>`;
+
+  const matchesPlayed = dataRows.filter(r => num(r[2]) > 0 || (r[1]||'') !== '').length;
+  const totalPoints = totalRow.length ? num(totalRow[2]) : dataRows.reduce((s,r) => s + num(r[2]), 0);
+  const avgPoints = matchesPlayed ? (totalPoints / matchesPlayed).toFixed(1) : 0;
+  const bestMatch = dataRows.reduce((best,r) => num(r[2]) > num(best[2]||-1) ? r : best, dataRows[0] || []);
+
+  document.getElementById('posStats').innerHTML = `
+    <div class="stat"><div class="label">Matches Played</div><div class="value">${matchesPlayed}</div></div>
+    <div class="stat"><div class="label">Total Points</div><div class="value accent">${totalPoints}</div></div>
+    <div class="stat"><div class="label">Avg Points / Match</div><div class="value">${avgPoints}</div></div>
+    <div class="stat"><div class="label">Best Match</div><div class="value">${bestMatch && bestMatch[0]!==undefined ? 'M'+bestMatch[0]+' · '+num(bestMatch[2])+' pts' : '—'}</div></div>
+  `;
+}
+
+/* ===================== SIGNATURE: MATCH LADDER ===================== */
+function buildLadder(dataRows, playedFn){
+  return `<div class="ladder">${dataRows.map(r => {
+    const played = playedFn(r);
+    return `<div class="ladder-node ${played?'played':''}"><div class="line"></div><div class="pip">${r[0]}</div><div class="pts">${played?'played':'—'}</div></div>`;
+  }).join('')}</div>`;
+}
+
+/* ===================== INIT ===================== */
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-view]');
+  if(!btn) return;
+  renderView(btn.dataset.view);
+});
+document.getElementById('refreshBtn').addEventListener('click', loadAll);
+
+loadAll();
+setInterval(loadAll, REFRESH_MS);
+</script>
+</body>
+</html>
